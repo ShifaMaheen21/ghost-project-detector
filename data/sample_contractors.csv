@@ -1,0 +1,4 @@
+contractor_name,registration_number,total_projects,completed_on_time,completed_late,projects_failed,legal_cases,score
+ABC Constructions,REG123456,15,5,4,6,3,30
+XYZ Builders,REG789012,20,16,3,1,0,85
+PQR Infra,REG345678,8,2,3,3,2,35

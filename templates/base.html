@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghost Project Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/">🏗️ Ghost Project Detector</a>
+        </div>
+        <div class="nav-links">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/citizen-report">Report Issue</a>
+            <a href="/cost-tracking">Cost Tracking</a>
+            <a href="/contractors">Contractors</a>
+            <a href="/quality-parameters">Quality</a>
+            <a href="/verification">Verification</a>
+            <a href="/tenders">Tenders</a>
+            <a href="/escrow">Escrow</a>
+            <a href="/whistleblower">Whistleblower</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>Ghost Project Detector — Fighting Corruption with Technology</p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

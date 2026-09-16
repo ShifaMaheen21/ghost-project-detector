@@ -1,0 +1,20 @@
+project_type,component,parameter_name,unit,expected_value,min_value,max_value,criticality,weight,measurement_method
+Road,Carriageway,Width,metre,7.0,6.86,7.14,Major,20,Drone/LiDAR
+Road,Carriageway,Camber,percent,2.5,2.0,3.0,Major,15,Survey
+Road,Pavement,BC Thickness,mm,40,38,42,Critical,20,Core Test
+Road,Pavement,DBM Thickness,mm,50,47,53,Critical,15,Core Test
+Road,Pavement,Cracks,percent,0,0,5,Moderate,10,Computer Vision
+Road,Pavement,Potholes,count per km,0,0,5,Moderate,10,Computer Vision
+Road,Drainage,Drain Slope,percent,1.0,0.5,2.0,Major,10,Level Survey
+Building,Structure,Column Dimension,mm,300,290,310,Critical,20,Measurement
+Building,Structure,Concrete Grade,MPa,30,30,50,Critical,25,Cube Test
+Building,Structure,Reinforcement Cover,mm,40,35,50,Critical,15,Cover Meter
+Building,Finishing,Wall Alignment,mm,0,0,10,Moderate,10,Measurement
+Building,Finishing,Doors,count,10,10,10,Major,10,Visual
+Building,Safety,Fire Exit,count,2,2,2,Critical,20,Visual
+Bridge,Deck,Deck Width,metre,12,11.8,12.2,Critical,20,Drone
+Bridge,Deck,Expansion Joint,mm,50,45,55,Critical,20,Measurement
+Bridge,Deck,Deck Alignment,mm,0,0,15,Critical,15,Survey
+Bridge,Structure,Cracks,mm,0,0,3,Critical,15,Computer Vision
+Bridge,Structure,Reinforcement Exposure,count,0,0,0,Critical,15,Visual
+Bridge,Safety,Guardrails,metre,400,395,405,Major,15,Visual

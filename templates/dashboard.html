@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>🗺️ Public Project Dashboard</h1>
+
+<div class="summary-cards">
+    <div class="summary-card">
+        <h3>{{ total }}</h3>
+        <p>Total Projects</p>
+    </div>
+    <div class="summary-card green">
+        <h3>{{ on_track }}</h3>
+        <p>On Track</p>
+    </div>
+    <div class="summary-card yellow">
+        <h3>{{ delayed }}</h3>
+        <p>Delayed</p>
+    </div>
+    <div class="summary-card blue">
+        <h3>{{ completed }}</h3>
+        <p>Completed</p>
+    </div>
+    <div class="summary-card red">
+        <h3>{{ suspicious }}</h3>
+        <p>Suspicious</p>
+    </div>
+    <div class="summary-card dark">
+        <h3>{{ high_risk }}</h3>
+        <p>High Risk</p>
+    </div>
+</div>
+
+<h2>📍 Project Locations</h2>
+<div id="map"></div>
+
+<h2>📋 All Projects (sorted by risk)</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Project</th>
+            <th>State</th>
+            <th>Village</th>
+            <th>Budget</th>
+            <th>Status</th>
+            <th>Claimed %</th>
+            <th>Observed %</th>
+            <th>Risk</th>
+            <th>Contractor</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for project in projects %}
+        <tr>
+            <td>{{ project.project_name }}</td>
+            <td>{{ project.state }}</td>
+            <td>{{ project.village }}</td>
+            <td>₹{{ "{:,.0f}".format(project.budget) }}</td>
+            <td>
+                <span class="status-badge status-{{ project.status.lower().replace(' ', '-') }}">
+                    {{ project.status }}
+                </span>
+            </td>
+            <td>{{ project.claimed_completion }}%</td>
+            <td>{{ project.observed_completion }}%</td>
+            <td>
+                <span class="risk-badge risk-{{ project.risk_level.lower() }}">
+                    {{ project.risk_score }} — {{ project.risk_level }}
+                </span>
+            </td>
+            <td>{{ project.contractor_name }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    var map = L.map('map').setView([22.5, 78.9], 5);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    var projects = {{ projects | map(attribute='project_name') | list | tojson }};
+    var lats = {{ projects | map(attribute='latitude') | list | tojson }};
+    var lngs = {{ projects | map(attribute='longitude') | list | tojson }};
+    var statuses = {{ projects | map(attribute='status') | list | tojson }};
+    var risks = {{ projects | map(attribute='risk_level') | list | tojson }};
+    var scores = {{ projects | map(attribute='risk_score') | list | tojson }};
+    var budgets = {{ projects | map(attribute='budget') | list | tojson }};
+
+    var colorMap = { 'High': 'red', 'Medium': 'orange', 'Low': 'green' };
+
+    for (var i = 0; i < projects.length; i++) {
+        if (lats[i] && lngs[i]) {
+            var color = colorMap[risks[i]] || 'blue';
+            var circle = L.circleMarker([lats[i], lngs[i]], {
+                radius: 10,
+                fillColor: color,
+                color: '#fff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.85
+            }).addTo(map);
+
+            circle.bindPopup(
+                '<b>' + projects[i] + '</b><br>' +
+                'Status: ' + statuses[i] + '<br>' +
+                'Budget: ₹' + Number(budgets[i]).toLocaleString() + '<br>' +
+                'Risk: ' + scores[i] + ' (' + risks[i] + ')'
+            );
+        }
+    }
+</script>
+{% endblock %}
