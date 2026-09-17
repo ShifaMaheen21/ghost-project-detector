@@ -51,7 +51,7 @@
     <tbody>
         {% for project in projects %}
         <tr>
-            <td>{{ project.project_name }}</td>
+            <td><a href="/project/{{ project.project_id }}" style="color:#1a1a2e;font-weight:bold;text-decoration:none;border-bottom:2px solid #ff6b6b;">{{ project.project_name }}</a></td>
             <td>{{ project.state }}</td>
             <td>{{ project.village }}</td>
             <td>₹{{ "{:,.0f}".format(project.budget) }}</td>

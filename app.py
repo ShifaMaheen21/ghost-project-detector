@@ -41,5 +41,69 @@ def dashboard():
                            suspicious=suspicious,
                            high_risk=high_risk)
 
+@app.route('/project/<int:project_id>')
+def project_detail(project_id):
+    conn = get_db()
+
+    # 1. Project + contractor
+    project = conn.execute('''
+        SELECT p.*, c.contractor_name, c.registration_number, c.score AS contractor_score
+        FROM projects p
+        LEFT JOIN contractors c ON p.contractor_id = c.contractor_id
+        WHERE p.project_id = ?
+    ''', (project_id,)).fetchone()
+
+    if not project:
+        conn.close()
+        return "Project not found", 404
+
+    # 2. Evidence
+    evidence = conn.execute('''
+        SELECT * FROM project_evidence
+        WHERE project_id = ?
+        ORDER BY captured_date DESC
+    ''', (project_id,)).fetchall()
+
+    # 3. Milestones
+    milestones = conn.execute('''
+        SELECT * FROM milestones
+        WHERE project_id = ?
+        ORDER BY expected_date ASC
+    ''', (project_id,)).fetchall()
+
+    # 4. Quality results (joined with parameters)
+    quality_results = conn.execute('''
+        SELECT qr.*, qp.parameter_name, qp.component, qp.unit,
+               qp.expected_value, qp.criticality
+        FROM project_quality_results qr
+        JOIN quality_parameters qp ON qr.param_id = qp.param_id
+        WHERE qr.project_id = ?
+    ''', (project_id,)).fetchall()
+
+    # 5. Citizen reports
+    citizen_reports = conn.execute('''
+        SELECT * FROM citizen_reports
+        WHERE project_id = ?
+        ORDER BY report_date DESC
+    ''', (project_id,)).fetchall()
+
+    # 6. Audit actions
+    audit_actions = conn.execute('''
+        SELECT * FROM audit_actions
+        WHERE project_id = ?
+        ORDER BY action_date DESC
+    ''', (project_id,)).fetchall()
+
+    conn.close()
+
+    return render_template('project_detail.html',
+                           project=project,
+                           evidence=evidence,
+                           milestones=milestones,
+                           quality_results=quality_results,
+                           citizen_reports=citizen_reports,
+                           audit_actions=audit_actions)
+
+
 if __name__ == '__main__':
     app.run(debug=True)

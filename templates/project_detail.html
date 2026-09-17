@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ project.project_name }}</h1>
+
+<p><strong>Project ID:</strong> {{ project.project_id }}</p>
+<p><strong>Type:</strong> {{ project.project_type }}</p>
+<p><strong>Location:</strong> {{ project.village }}, {{ project.district }}, {{ project.state }}</p>
+<p><strong>Budget:</strong> ₹{{ "{:,.0f}".format(project.budget) }}</p>
+<p><strong>Status:</strong> {{ project.status }}</p>
+<p><strong>Risk Score:</strong> {{ project.risk_score }} ({{ project.risk_level }})</p>
+
+<hr>
+<h2>Progress</h2>
+<ul>
+    <li>Claimed: {{ project.claimed_completion }}%</li>
+    <li>Observed: {{ project.observed_completion }}%</li>
+    <li>Financial Paid: ₹{{ "{:,.0f}".format(project.financial_paid or 0) }}</li>
+    <li>e-MB Completion: {{ project.emb_completion }}%</li>
+</ul>
+
+<hr>
+<h2>Contractor</h2>
+{% if project.contractor_name %}
+<p>{{ project.contractor_name }} (Reg: {{ project.registration_number }}) — Score: {{ project.contractor_score }}</p>
+{% else %}
+<p>No contractor assigned.</p>
+{% endif %}
+
+<hr>
+<h2>Evidence ({{ evidence|length }})</h2>
+{% if evidence %}
+<table>
+    <tr><th>Type</th><th>Observed</th><th>Score</th><th>Source</th></tr>
+    {% for e in evidence %}
+    <tr>
+        <td>{{ e.evidence_type }}</td>
+        <td>{{ e.observed_value }}</td>
+        <td>{{ e.score }}</td>
+        <td>{{ e.source }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No evidence recorded yet.</p>
+{% endif %}
+
+<hr>
+<h2>Milestones ({{ milestones|length }})</h2>
+{% if milestones %}
+<table>
+    <tr><th>Name</th><th>Expected</th><th>Actual</th><th>Status</th></tr>
+    {% for m in milestones %}
+    <tr>
+        <td>{{ m.milestone_name }}</td>
+        <td>{{ m.expected_date }}</td>
+        <td>{{ m.actual_date or '—' }}</td>
+        <td>{{ m.status }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No milestones recorded.</p>
+{% endif %}
+
+<hr>
+<h2>Quality Results ({{ quality_results|length }})</h2>
+{% if quality_results %}
+<table>
+    <tr><th>Component</th><th>Parameter</th><th>Expected</th><th>Observed</th><th>Status</th></tr>
+    {% for q in quality_results %}
+    <tr>
+        <td>{{ q.component }}</td>
+        <td>{{ q.parameter_name }}</td>
+        <td>{{ q.expected_value }} {{ q.unit }}</td>
+        <td>{{ q.observed_value }} {{ q.unit }}</td>
+        <td>{{ q.status }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No quality checks recorded.</p>
+{% endif %}
+
+<hr>
+<h2>Citizen Reports ({{ citizen_reports|length }})</h2>
+{% if citizen_reports %}
+<table>
+    <tr><th>Date</th><th>Type</th><th>Description</th><th>Status</th></tr>
+    {% for r in citizen_reports %}
+    <tr>
+        <td>{{ r.report_date }}</td>
+        <td>{{ r.report_type }}</td>
+        <td>{{ r.description }}</td>
+        <td>{{ r.status }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No citizen reports yet.</p>
+{% endif %}
+
+<hr>
+<h2>Audit Actions ({{ audit_actions|length }})</h2>
+{% if audit_actions %}
+<table>
+    <tr><th>Date</th><th>Action</th><th>Notes</th><th>Auditor</th></tr>
+    {% for a in audit_actions %}
+    <tr>
+        <td>{{ a.action_date }}</td>
+        <td>{{ a.action_type }}</td>
+        <td>{{ a.notes }}</td>
+        <td>{{ a.auditor_name or '—' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No audit actions recorded.</p>
+{% endif %}
+
+<hr>
+<a href="/dashboard">← Back to Dashboard</a>
+{% endblock %}
