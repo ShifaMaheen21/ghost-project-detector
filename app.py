@@ -5,8 +5,13 @@ app = Flask(__name__)
 
 app.secret_key = 'ghost-project-detector-dev-key-change-in-production'
 
+
 from routes.reports import reports_bp
+
 app.register_blueprint(reports_bp)
+
+from routes.costs import costs_bp
+app.register_blueprint(costs_bp)
 
 DB_PATH = 'database/ghost_project.db'
 

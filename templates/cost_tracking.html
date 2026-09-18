@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>💰 Cost Tracking & Fraud Detection</h1>
+<p>Compare what contractors claim they spent vs. what materials should actually cost.</p>
+
+<div style="background:white;padding:2rem;border-radius:10px;max-width:800px;margin:1rem 0;">
+    <h2>🔍 Verify Contractor's Claim</h2>
+
+    <div class="form-group">
+        <label>Material</label>
+        <select id="material">
+            {% for rate in rates %}
+            <option value="{{ rate.material_name }}">
+                {{ rate.material_name }} (₹{{ rate.market_rate }}/{{ rate.unit }})
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Quantity</label>
+        <input type="number" id="quantity" value="100" min="1" step="any">
+    </div>
+
+    <div class="form-group">
+        <label>Contractor Claimed Cost (₹)</label>
+        <input type="number" id="claimed" value="50000" min="0" step="any">
+    </div>
+
+    <button onclick="checkCost()" class="btn-primary">Check for Fraud</button>
+
+    <div id="result" style="display:none;margin-top:1.5rem;padding:1.5rem;background:#f9f9f9;border-radius:10px;"></div>
+</div>
+
+<h2>📊 Current Market Rates</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Material</th>
+            <th>Unit</th>
+            <th>Market Rate (₹)</th>
+            <th>Last Updated</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rate in rates %}
+        <tr>
+            <td>{{ rate.material_name }}</td>
+            <td>{{ rate.unit }}</td>
+            <td>₹{{ "{:,.0f}".format(rate.market_rate) }}</td>
+            <td>{{ rate.last_updated }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function checkCost() {
+    var material = document.getElementById('material').value;
+    var quantity = document.getElementById('quantity').value;
+    var claimed = document.getElementById('claimed').value;
+
+    fetch('/api/check-cost', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            material: material,
+            quantity: quantity,
+            claimed: claimed
+        })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        var box = document.getElementById('result');
+        box.style.display = 'block';
+
+        if (data.error) {
+            box.innerHTML = '<div class="alert alert-danger">' + data.error + '</div>';
+            return;
+        }
+
+        var html = '';
+        html += '<p><strong>Material:</strong> ' + data.material + '</p>';
+        html += '<p><strong>Market Rate:</strong> ₹' + data.market_rate.toLocaleString() + ' per ' + data.unit + '</p>';
+        html += '<p><strong>Quantity:</strong> ' + data.quantity + '</p>';
+        html += '<p><strong>Actual Cost (Market):</strong> ₹' + data.actual_cost.toLocaleString() + '</p>';
+        html += '<p><strong>Contractor Claimed:</strong> ₹' + data.claimed_cost.toLocaleString() + '</p>';
+        html += '<p><strong>Overcharge:</strong> ₹' + data.overcharge.toLocaleString() + ' (' + data.overcharge_percent + '%)</p>';
+
+        var cls = 'alert-info';
+        var icon = 'ℹ️';
+        if (data.verdict === 'FRAUD') { cls = 'alert-danger'; icon = '🚨'; }
+        else if (data.verdict === 'SUSPICIOUS') { cls = 'alert-warning'; icon = '⚠️'; }
+        else if (data.verdict === 'ACCEPTABLE') { cls = 'alert-success'; icon = '✅'; }
+        else if (data.verdict === 'UNDER') { cls = 'alert-info'; icon = 'ℹ️'; }
+
+        html += '<div class="alert ' + cls + '">' + icon + ' <strong>' + data.verdict + ':</strong> ' + data.message + '</div>';
+
+        box.innerHTML = html;
+    })
+    .catch(function(err) {
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('result').innerHTML = '<div class="alert alert-danger">Request failed: ' + err + '</div>';
+    });
+}
+</script>
+{% endblock %}
