@@ -16,6 +16,8 @@ app.register_blueprint(costs_bp)
 from routes.emb import emb_bp
 app.register_blueprint(emb_bp)
 
+from routes.contractors import contractors_bp
+app.register_blueprint(contractors_bp)
 
 DB_PATH = 'database/ghost_project.db'
 

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>⭐ Contractor Performance Scoring</h1>
+<p>Every contractor gets a 0–100 score based on their track record.</p>
+
+<h2>🏆 All Contractors (worst first)</h2>
+{% for c in contractors %}
+<div class="detail-section">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+        <div>
+            <h3 style="margin:0;">{{ c.contractor_name }}</h3>
+            <small style="color:#666;">Reg: {{ c.registration_number }}</small>
+        </div>
+        <div>
+            {% if c.bucket == 'GOOD' %}
+                <span class="risk-badge risk-low">Score: {{ c.score }}/100</span>
+            {% elif c.bucket == 'AVERAGE' %}
+                <span class="risk-badge risk-medium">Score: {{ c.score }}/100</span>
+            {% else %}
+                <span class="risk-badge risk-high">Score: {{ c.score }}/100</span>
+            {% endif %}
+        </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:0.6rem;margin-top:1rem;">
+        <div style="text-align:center;padding:0.6rem;background:#f5f7fa;border-radius:6px;">
+            <strong>{{ c.total_projects }}</strong><br><small>Total</small>
+        </div>
+        <div style="text-align:center;padding:0.6rem;background:#d4edda;border-radius:6px;">
+            <strong>{{ c.completed_on_time }}</strong><br><small>On Time</small>
+        </div>
+        <div style="text-align:center;padding:0.6rem;background:#fff3cd;border-radius:6px;">
+            <strong>{{ c.completed_late }}</strong><br><small>Late</small>
+        </div>
+        <div style="text-align:center;padding:0.6rem;background:#f8d7da;border-radius:6px;">
+            <strong>{{ c.projects_failed }}</strong><br><small>Failed</small>
+        </div>
+        <div style="text-align:center;padding:0.6rem;background:#f8d7da;border-radius:6px;">
+            <strong>{{ c.legal_cases }}</strong><br><small>Legal Cases</small>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<h2>🚫 Blacklist Candidates (score &lt; 40)</h2>
+{% if blacklist %}
+<table>
+    <thead>
+        <tr><th>Contractor</th><th>Score</th><th>Failed</th><th>Legal Cases</th></tr>
+    </thead>
+    <tbody>
+        {% for c in blacklist %}
+        <tr>
+            <td>{{ c.contractor_name }}</td>
+            <td><span class="risk-badge risk-high">{{ c.score }}</span></td>
+            <td>{{ c.projects_failed }}</td>
+            <td>{{ c.legal_cases }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No contractors currently blacklisted.</p>
+{% endif %}
+
+{% endblock %}

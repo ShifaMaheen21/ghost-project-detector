@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>🕸️ Fraud Network Analysis</h1>
+<p>Cross-project patterns that individual audits miss.</p>
+
+<h2>📸 Duplicate Photos Across Projects</h2>
+{% if duplicate_photos %}
+<table>
+    <thead>
+        <tr>
+            <th>Photo Hash</th>
+            <th>Occurrences</th>
+            <th>Report IDs</th>
+            <th>Projects</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for d in duplicate_photos %}
+        <tr>
+            <td><code style="font-size:0.75rem;">{{ d.photo_hash[:16] }}…</code></td>
+            <td><span class="risk-badge risk-high">{{ d.occurrences }}</span></td>
+            <td>{{ d.report_ids }}</td>
+            <td>{{ d.project_names }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No duplicate photos detected yet. (Submit the same photo to two different reports to see this.)</p>
+{% endif %}
+
+<h2>⚠️ Contractors with Multiple High-Risk Projects</h2>
+{% if risky_contractors %}
+<table>
+    <thead>
+        <tr>
+            <th>Contractor</th>
+            <th>Reg. Number</th>
+            <th>High-Risk Projects</th>
+            <th>Project Names</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in risky_contractors %}
+        <tr>
+            <td>{{ c.contractor_name }}</td>
+            <td>{{ c.registration_number }}</td>
+            <td><span class="risk-badge risk-high">{{ c.risky_project_count }}</span></td>
+            <td>{{ c.project_names }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No contractor currently has more than one high-risk project.</p>
+{% endif %}
+
+<h2>💸 Tenders with Identical Amounts</h2>
+{% if suspicious_tenders %}
+<table>
+    <thead>
+        <tr>
+            <th>Amount</th>
+            <th>Tender A</th>
+            <th>Tender B</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for t in suspicious_tenders %}
+        <tr>
+            <td>₹{{ "{:,.0f}".format(t.tender_amount) }}</td>
+            <td>#{{ t.tender_a }} — {{ t.title_a }}</td>
+            <td>#{{ t.tender_b }} — {{ t.title_b }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No duplicate tender amounts detected.</p>
+{% endif %}
+
+{% endblock %}
+
