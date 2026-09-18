@@ -13,6 +13,10 @@ app.register_blueprint(reports_bp)
 from routes.costs import costs_bp
 app.register_blueprint(costs_bp)
 
+from routes.emb import emb_bp
+app.register_blueprint(emb_bp)
+
+
 DB_PATH = 'database/ghost_project.db'
 
 def get_db():

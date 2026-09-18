@@ -1,0 +1,18 @@
+project_id,material_name,unit,boq_quantity,emb_quantity,observed_quantity
+1,Concrete,Cubic Meter,1000,990,620
+1,Steel,Ton,500,495,310
+1,Bitumen,Ton,80,80,75
+2,Bricks,1000 pieces,20,20,19
+2,Concrete,Cubic Meter,150,148,145
+3,Concrete,Cubic Meter,2000,1980,1300
+3,Bricks,1000 pieces,100,99,45
+3,Steel,Ton,600,595,380
+4,Concrete,Cubic Meter,2500,2450,1600
+4,Steel,Ton,800,790,510
+5,Concrete,Cubic Meter,800,790,780
+5,Bricks,1000 pieces,40,40,39
+6,Concrete,Cubic Meter,700,690,90
+7,Concrete,Cubic Meter,3000,2950,1050
+7,Steel,Ton,900,890,340
+8,Concrete,Cubic Meter,200,198,196
+

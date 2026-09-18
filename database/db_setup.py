@@ -172,6 +172,22 @@ def create_database():
     )
     ''')
 
+	    # ============ 13. BOQ ITEMS ============
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS boq_items (
+        boq_item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        project_id INTEGER,
+        material_name TEXT,
+        unit TEXT,
+        boq_quantity REAL,
+        emb_quantity REAL,
+        observed_quantity REAL,
+        discrepancy_percent REAL DEFAULT 0,
+        status TEXT DEFAULT 'Pending'
+    )
+    ''')
+
+
     conn.commit()
     conn.close()
     print("[OK] Database created with 12 tables at", DB_PATH)

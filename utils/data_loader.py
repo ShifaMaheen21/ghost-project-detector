@@ -27,6 +27,11 @@ def load_all_data():
     quality.to_sql('quality_parameters', conn, if_exists='append', index=False)
     print(f"[OK] Loaded {len(quality)} quality parameters")
 
+    # BOQ items
+    boq = pd.read_csv('data/sample_boq.csv')
+    boq.to_sql('boq_items', conn, if_exists='append', index=False)
+    print(f"[OK] Loaded {len(boq)} BOQ items")
+
     conn.close()
     print("[OK] All sample data loaded successfully!")
 

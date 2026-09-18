@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>📐 BOQ / e-MB Reconciliation</h1>
+<p>Compare designed quantities (BOQ) vs recorded execution (e-MB) vs what's actually on the ground.</p>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+{% endwith %}
+
+{% if project %}
+    <a href="/emb" class="btn-secondary" style="margin-bottom:1rem;display:inline-block;">← All Projects</a>
+
+    <div class="detail-section">
+        <h2>{{ project.project_name }} — {{ project.village }}</h2>
+        <p><strong>Overall discrepancy:</strong>
+            {{ total_disc }}% — Status:
+            {% if total_status == 'RED' %}
+                <span class="risk-badge risk-high">RED</span>
+            {% elif total_status == 'YELLOW' %}
+                <span class="risk-badge risk-medium">YELLOW</span>
+            {% else %}
+                <span class="risk-badge risk-low">GREEN</span>
+            {% endif %}
+        </p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Material</th>
+                <th>Unit</th>
+                <th>BOQ</th>
+                <th>e-MB</th>
+                <th>Observed</th>
+                <th>Discrepancy</th>
+                <th>Status</th>
+                <th>Update Observed</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.material_name }}</td>
+                <td>{{ item.unit }}</td>
+                <td>{{ item.boq_quantity }}</td>
+                <td>{{ item.emb_quantity }}</td>
+                <td>{{ item.observed_quantity }}</td>
+                <td>{{ item.discrepancy }}%</td>
+                <td>
+                    {% if item.status == 'RED' %}
+                        <span class="risk-badge risk-high">RED</span>
+                    {% elif item.status == 'YELLOW' %}
+                        <span class="risk-badge risk-medium">YELLOW</span>
+                    {% else %}
+                        <span class="risk-badge risk-low">GREEN</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form method="POST" action="/emb/update/{{ item.boq_item_id }}" style="display:flex;gap:0.3rem;">
+                        <input type="number" name="observed_quantity" step="any"
+                               value="{{ item.observed_quantity }}" style="width:90px;padding:0.3rem;">
+                        <button type="submit" class="btn-primary" style="padding:0.3rem 0.6rem;font-size:0.8rem;">Save</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <h2>All Projects</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Project</th>
+                <th>Village</th>
+                <th>Items</th>
+                <th>Total e-MB</th>
+                <th>Total Observed</th>
+                <th>Discrepancy</th>
+                <th>Status</th>
+                <th>Open</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in projects %}
+            <tr>
+                <td>{{ p.project_name }}</td>
+                <td>{{ p.village }}</td>
+                <td>{{ p.item_count }}</td>
+                <td>{{ "{:,.0f}".format(p.total_emb) }}</td>
+                <td>{{ "{:,.0f}".format(p.total_observed) }}</td>
+                <td>{{ p.discrepancy }}%</td>
+                <td>
+                    {% if p.status == 'RED' %}
+                        <span class="risk-badge risk-high">RED</span>
+                    {% elif p.status == 'YELLOW' %}
+                        <span class="risk-badge risk-medium">YELLOW</span>
+                    {% else %}
+                        <span class="risk-badge risk-low">GREEN</span>
+                    {% endif %}
+                </td>
+                <td><a href="/emb/{{ p.project_id }}" class="project-link">Details →</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+{% endblock %}
